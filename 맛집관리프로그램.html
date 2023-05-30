@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #wrapper {
+            width: 1100px;
+            height: 600px;
+            background: yellow;
+            margin: auto;
+        }
+
+        #input_side {
+            width: 150px;
+            height: 100%;
+            background: red;
+            float: left;
+            text-align: center;
+        }
+
+        #input_side * {
+            width: 95%;
+            margin: 2px;
+        }
+
+        #content {
+            width: 800px;
+            height: 100%;
+            background: greenyellow;
+            float: left;
+        }
+
+        #list_side {
+            width: 150px;
+            height: 100%;
+            background: indianred;
+            float: left;
+        }
+
+        #food {
+            height: 160px;
+        }
+    </style>
+    <script>
+        let content;//맵이 랜더링될 div
+        let map;  //구글의 맵 객체 , 맵을 표현
+
+        //구글맵을 div에 시각화 시키자
+        function createMap() {
+            //어떤 스타일의 맵을 생성할지 속성정의
+            let mapProp = {
+                //맵의 카메라의 중심점
+                center: new google.maps.LatLng(37.509329, 127.101485),
+
+                //카메라 확대배율
+                zoom: 15,
+            };
+
+            map = new google.maps.Map(content, mapProp);
+        }
+
+        //문서와 맵이 모두 로드되면..
+        function init() {
+            content = document.getElementById("content");
+
+            createMap();
+        }
+
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="input_side">
+            <!-- 맛집 등록폼 -->
+            <input type="text" placeholder="상호입력..">
+            <textarea name="" cols="19" rows="4"></textarea>
+            <input type="text" placeholder="위도입력">
+            <input type="text" placeholder="경도입력">
+            <select>
+                <option value="">이미지 선택</option>
+                <option value="">치킨</option>
+                <option value="">피자</option>
+                <option value="">돈까스</option>
+                <option value="">스파게티</option>
+            </select>
+
+            <img id="food">
+
+            <button>등록</button>
+
+        </div>
+        <div id="content"></div>
+        <div id="list_side"></div>
+
+    </div>
+
+</body>
+
+</html>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBL5elFTcyXZG54fkwEMhMUJ13AocvASVw&callback=init"></script>
