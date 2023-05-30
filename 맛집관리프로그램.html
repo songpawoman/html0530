@@ -47,7 +47,22 @@
     </style>
     <script>
         let content;//맵이 랜더링될 div
+        let food;
         let map;  //구글의 맵 객체 , 맵을 표현
+        let storeList = []; //모든 맛집을 저장해놓을 배열 
+        //일종의 이차원 배열의 역할 
+
+        let markerList=[]; //마커를 저장해놓을 배열 
+
+        let store; //맛집명 
+        let msg; //평가글 
+        let lati; //위도 
+        let longi;//경도 
+        let sel; //선택 이미지 
+
+        let list_side; //상점들의 목록이 출력될 div 영역 
+
+        
 
         //구글맵을 div에 시각화 시키자
         function createMap() {
@@ -63,9 +78,102 @@
             map = new google.maps.Map(content, mapProp);
         }
 
+        //선택한 이미지 미리보기 
+        function preview(src) {
+            food.src = src;
+        }
+
+        //storeList에 쌓여있는 상점들을 우측 영역에 출력
+        function getList() {
+            let tag = ""; //테이블을 쌓아둘 변수 
+            tag += "<table border=\"1px\" width=\"100%\">";
+
+            //맛집 수만큼 반복문 실행
+            for (let i = 0; i < storeList.length; i++) {
+
+                let store = storeList[i];//하나의 맛집을 꺼내기 
+                console.log(i, "번째 상점은 ", store);
+
+                tag += "<tr>";
+                tag += "<td><img src=\"" + store.food + "\" width=\"25px\"></td>";
+                tag += "<td>" + store.store + "</td>";
+                tag += "</tr>";
+            }
+            tag += "</table>";
+
+            list_side.innerHTML = tag;
+        }
+
+        //맛집 배열에 들어있는 모든 맛집정보를 구글 지도에 표시
+        function showIcon() {
+            //마커를 반복문으로 생성하기 전에, 기존에 존재하는
+            //마커가 있다면 반복문으로 제거하자 
+            for(let i=0;i<markerList.length;i++){
+                markerList[i].setMap(null);
+            }
+
+            for (let i = 0; i < storeList.length; i++) {
+                let store = storeList[i]; //배열에서 샘플로 하나의 맛집꺼내기
+
+                //위도,경도 객체 생성 
+                let pos = new google.maps.LatLng(store.lati, store.longi);
+
+                //마커생성              
+                let marker = new google.maps.Marker({ 
+                    position: pos , 
+                    animation:google.maps.Animation.BOUNCE,
+                    icon:{
+                        url:store.food,
+                        scaledSize:new google.maps.Size(35, 35), 
+                        map:map
+                    }
+                });
+
+                //맵에 반영
+                marker.setMap(map);
+                
+                //마커배열에 추가해놓기(나중에 한꺼번에 삭제할 예정)
+                markerList.push(marker);
+
+                let infowindow = new google.maps.InfoWindow({
+                    content: store.msg
+                });
+
+                infowindow.open(map, marker);
+            }
+        }
+
+        //왼쪽 맛집등록폼에 입력한 모든 내용을 어딘가에 저장해놓은
+        //후, 지도에 표시도 하고, 우측 사이드 표로 출력도하자 
+        function regist() {
+            //1건의 맛집에 대한 정보는 1개의 JSON객체로 담자
+            let obj = {
+                store: store.value,
+                msg: msg.value,
+                lati: lati.value,
+                longi: longi.value,
+                food: sel.value
+            };
+
+            //console.log(obj);
+            storeList.push(obj);//현재 상점 정보을 목록에 추가
+            console.log("현재까지 등록된 상점은 ", storeList.length);
+
+            getList();//목록 보여주기 호출
+            showIcon();//지도에 보여주기 호출
+        }
+
         //문서와 맵이 모두 로드되면..
         function init() {
             content = document.getElementById("content");
+            list_side = document.getElementById("list_side");
+            food = document.getElementById("food");
+
+            store = form1.store;
+            msg = form1.msg;
+            lati = form1.lati;
+            longi = form1.longi;
+            sel = form1.sel;
 
             createMap();
         }
@@ -77,22 +185,32 @@
     <div id="wrapper">
         <div id="input_side">
             <!-- 맛집 등록폼 -->
-            <input type="text" placeholder="상호입력..">
-            <textarea name="" cols="19" rows="4"></textarea>
-            <input type="text" placeholder="위도입력">
-            <input type="text" placeholder="경도입력">
-            <select>
-                <option value="">이미지 선택</option>
-                <option value="">치킨</option>
-                <option value="">피자</option>
-                <option value="">돈까스</option>
-                <option value="">스파게티</option>
-            </select>
+            <form name="form1">
+                <!-- 추후 서버프로그래밍 시 HTML문서의 입력내용을 서버에 전송할때
+                는 전송 변수역할을 name이 해줄수 있다..id는 불가 -->
+                <input type="text" placeholder="상호입력.." name="store">
+                <textarea name="msg" cols="19" rows="4"></textarea>
+                <input type="text" name="lati" placeholder="위도입력">
+                <input type="text" name="longi" placeholder="경도입력">
+                <select onChange="preview(this.value)" name="sel">
+                    <option value="">이미지 선택</option>
+                    <option value="../images/food.jfif">치킨</option>
+                    <option value="../images/ddug.png">떡볶이</option>
+                    <option value="">돈까스</option>
+                    <option value="">스파게티</option>
+                </select>
 
-            <img id="food">
+                <img id="food">
 
-            <button>등록</button>
-
+                <!--  전통적인 버튼
+                    <input type="button" value="등록">
+                -->
+                <!-- 
+                html5는 스마트폰등 차세대 디바이스를 위해 출시
+                form안에 두면 기본적으로 폼을 submit() 즉 전송 시도
+                -->
+                <button type="button" onClick="regist()">등록</button>
+            </form>
         </div>
         <div id="content"></div>
         <div id="list_side"></div>

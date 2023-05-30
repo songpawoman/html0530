@@ -42,7 +42,8 @@
             var marker = new google.maps.Marker({
                 position: mapProp.center,
                 animation: google.maps.Animation.BOUNCE,
-                icon: icon
+                icon: icon, 
+                map:map
             });
 
             //2)생성한 마커를 어느 맵객체에 적용할지를 명시 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #wrapper{
+            width:400px;
+            height:290px;
+            background: yellow;
+            margin: auto;
+        }
+        #header{
+            width:100%;
+            height:50px;
+            background: red;
+        }
+        #content{
+            width:100%;
+            height:200px;
+            background: greenyellow;    
+            overflow: hidden;     
+        }
+        #content img{
+            width:200px;
+            height:200px;       
+            float:left;     
+        }
+        #info{
+            width:200px;
+            height:200px;
+            float:left;
+            background: blue;
+        }        
+        #footer{
+            width:100%;
+            height:40px;
+            background: violet;
+            box-sizing: border-box;
+            position: relative;
+            overflow:hidden;
+        }
+    </style>
+    <script src="../js/data.json"></script>
+    <script>
+        let header;
+        let content;
+        let box;
+        let pic;
+        let index=0;
+        let targetX=0;
+        let a=0.1;
+
+        function next(){
+            pic.src=data.marvel[index].url;
+        }
+
+        function createThumb(){
+            for(let i=0;i<data.marvel.length;i++){
+                let img=document.createElement("img");
+                img.src=data.marvel[i].url;
+                img.style.width=40+"px";
+                img.style.height=40+"px";
+
+                img.style.position="absolute";
+                img.style.left=i*40+"px";      
+                img.style.border="2px solid black";
+                img.style.boxSizing="border-box";
+                footer.appendChild(img);
+            }
+        }
+
+        function move(){
+            content.style.left=parseFloat(content.style.left)+a*(targetX - parseFloat(content.style.left))+"px";
+        }
+
+        function init(){
+            header=document.getElementById("header");
+            content=document.getElementById("content");
+            box=document.getElementById("box");
+            footer=document.getElementById("footer");
+            pic=document.getElementById("pic");
+            
+            content.style.position="relative";
+            content.style.left=250+"px";
+
+            box.style.position="absolute";
+            box.style.left=0+"px";
+            box.style.top=0+"px";
+            
+            content.appendChild(box);
+        }
+
+        addEventListener("load", function(){
+            init();
+            next();
+            createThumb();
+
+            setInterval("move()", 10)
+        });
+    </script>
+</head>
+<body>
+    
+    <div id="wrapper">
+        <div id="header"></div>
+        <div id="content">
+            <div id="box">
+                <img id="pic">
+                <div id="info"></div>
+            </div>
+        </div>
+        <div id="footer">
+
+        </div>
+    </div>
+</body>
+</html>
